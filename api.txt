@@ -4,7 +4,7 @@ plastic_printer_data:register_blueprint(item, description, cost, drawing_image)
 
 See the example below:
 
-plastic_printer_data.register_blueprint("foomod:foobar", "Foo", "5", "foo_bar.png")
+plastic_printer_data:register_blueprint("foomod:foobar", "Foo", "5", "foo_bar.png")
 
 The result will be an item whose name will be "foomod:foobar_blueprint", description will be "Foo blueprint", cost will be "basic_materials:plastic_sheet 5"
 The parameter drawing_image is optional, it overlays the blueprint image. If nil, the item inventory image will be a blank blueprint.
