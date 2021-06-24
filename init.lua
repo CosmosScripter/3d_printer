@@ -8,7 +8,7 @@ result={}
 local function can_dig(pos, player)--Prevent a loss of items by accident
 	local meta = minetest.get_meta(pos);
 	local inv = meta:get_inventory()
-	if inv:is_empty("main") and inv:is_empty("material") and inv:is_empty("battery") then
+	if inv:is_empty("main") and inv:is_empty("material") and inv:is_empty("battery") and inv:is_empty("result") then
         return true
     else
         return false
@@ -27,6 +27,8 @@ local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 		return stack:get_count()
 	elseif listname == "battery" then
         return stack:get_count()
+    elseif listname == "result" then
+        return 0
 	end
 end
 
@@ -149,14 +151,15 @@ minetest.register_node("3d_printer:printer", {
 			.. default.gui_bg
 			.. default.gui_bg_img
 			.. default.gui_slots
-			.. "label[3.75,0;Blueprint]"
-			.. "list[current_name;main;3.5,0.5;1,1;]"
+			.. "label[2.75,0;Blueprint]"
+			.. "list[current_name;main;2.5,0.5;1,1;]"
 			.. "label[2.75,2;Plastic]"
 			.. "list[current_name;material;2.5,2.5;1,1;]"
-			.. "image[3.75,1.5;1,1;gui_printer_arrow.png^[transformr180]"
-			.. "image[3.5,2.3;1,1;gui_printer_arrow.png^[transformr90]"
+			.. "image[3.5,0.5;1,1;gui_printer_arrow.png^[transformr270]"
 			.. "label[4.75,2;Battery]"
 			.. "list[current_name;battery;4.5,2.5;1,1;]"
+			.. "label[4.75,0;Output]"
+			.. "list[current_name;result;4.5,0.5;1,1;]"
 			.. "list[current_player;main;0,5;8,1;]"
 			.. "list[current_player;main;0,6.2;8,3;8]")
 
@@ -164,6 +167,7 @@ minetest.register_node("3d_printer:printer", {
 			inventory:set_size("main", 1)
 			inventory:set_size("material", 1)
 			inventory:set_size("battery", 1)
+			inventory:set_size("result", 1)
     end,
     on_punch = function(pos, node, puncher)--The original plan was to use a kind of furnance thing, but I don't have experience with formspec and the mod was causing lag
 	    local meta = minetest.get_meta(pos)
@@ -173,7 +177,12 @@ minetest.register_node("3d_printer:printer", {
         local battery = inv:get_stack("battery", 1):to_table()
         if not plastic_used then return end
         local plastic_count = plastic_used.count
+        if not inv:is_empty("result") then
+            minetest.chat_send_player(puncher:get_player_name(), "Output slot already contains an item")--Avoiding a loss of items 
+            return
+        end
         --minetest.chat_send_player(puncher:get_player_name(), "working")
+        if not battery then return end
         if battery.wear >= 58981.5 then
             minetest.chat_send_player(puncher:get_player_name(), "Battery low")--Batteries wear out when the printer works
             minetest.chat_send_player(puncher:get_player_name(), "Battery replacement needed")
@@ -186,7 +195,8 @@ minetest.register_node("3d_printer:printer", {
                  --minetest.chat_send_player(puncher:get_player_name(), "second check")
                 if battery.name == "3d_printer:battery" then
                     --minetest.chat_send_player(puncher:get_player_name(), "third check")
-                    inv:set_stack("material", 1, blueprint_items.result[blueprint_used.name])
+                    inv:set_stack("material", 1, "")
+                    inv:set_stack("result", 1, blueprint_items.result[blueprint_used.name])
                     battery.wear = battery.wear + (65535/10)
                     inv:set_stack("battery", 1, battery)
                 end
