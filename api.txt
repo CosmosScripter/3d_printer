@@ -1,6 +1,6 @@
 To register your own blueprint use:
 
-plastic_printer_data.register_blueprint(item, description, cost, drawing_image)
+plastic_printer_data:register_blueprint(item, description, cost, drawing_image)
 
 See the example below:
 
