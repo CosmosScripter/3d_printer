@@ -1,0 +1,24 @@
+3D Printer crafting:
+
+{"basic_materials:plastic_sheet", "basic_materials:plastic_sheet", "basic_materials:plastic_sheet"},
+{"default:steel_ingot", "default:mese_crystal_fragment", "default:steel_ingot"},
+{"basic_materials:gear_steel", "basic_materials:plastic_sheet", "basic_materials:gear_steel"}
+
+-------------------------
+Blank blueprint crafting:
+
+{"default:paper", "default:paper", "default:paper"},
+{"default:paper", "dye:blue", "default:paper"},
+{"default:paper", "default:paper", "default:paper"}
+
+-------------------------
+Battery crafting (shapeless):
+
+{"default:copper_ingot", "default:mese_crystal_fragment"}
+
+NOTE: Batteries can be recicled, place a battery in any crafting slot and it will be transformed into "default:mese_crystal_fragment"
+
+-------------------------
+Any registered blueprint can be crafted using a blank blueprint and the desired item, so you can create copies of an item incase you have plastic
+
+Suggestion for developers: You can use blueprints as a way to unlock items by finding hidden blueprints

@@ -1,0 +1,12 @@
+3d_printer Copyright (C) 2021 Cosmos
+
+3d_printer mod by Cosmos- Adds a 3d_printer, a battery, and a blueprint registering api to Minetest.
+
+DISCLAIMER: This software is free, and will always be free. If you paid anything for obtaining this software, you have been bamboozled!
+=====================================================================
+
+All code provided in this package is is licensed under LGPL-2.1
+Full license: https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html
+
+All textures and models provided in this package are licensed under CC-BY-SA-4.0
+Full license: https://creativecommons.org/licenses/by-sa/4.0/legalcode
