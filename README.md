@@ -3,7 +3,7 @@
 This mod adds a 3D printer, which allows you to craft items only using plastic sheet, as long as you have a blueprint of the item and enough battery.
 
 To use a 3D printer, insert a blueprint, a charged battery, and the exact plastic sheet count required.
-After that, punch the printer and check it's inventory, the item output will be in the plastic input.
+After that, punch the printer and check it's inventory, the item output will be there.
 ---------------------------------------------
 See: license.txt for license.
 
