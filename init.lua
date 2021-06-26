@@ -4,6 +4,8 @@ price={},
 result={}
 }
 
+--local storage = minetest.get_mod_storage()
+
 --Functions
 local function can_dig(pos, player)--Prevent a loss of items by accident
 	local meta = minetest.get_meta(pos);
@@ -50,37 +52,39 @@ local printer_pen = {-0.05, 0.27, -0.05, 0.05, 0.37, 0.05}
 
 function plastic_printer_data:register_blueprint(item, description, cost, drawing_image)--If you want to add a drawing image, I recommend using the color #C7CDD2
     if drawing_image ~= nil then
-        minetest.register_craftitem(item.."_blueprint", {
+        minetest.register_craftitem(":"..item.."_blueprint", {
 	        inventory_image = "printer_blueprint.png^"..drawing_image,
 	        description = description.." blueprint\n".."Requires "..cost.." plastic sheet to be printed",--Added this info about plastic cost so people can know how much they need
             stack_max = 1,
             groups = {printer_blueprint=1},
         })
     else
-        minetest.register_craftitem(item.."_blueprint", {
+        minetest.register_craftitem(":"..item.."_blueprint", {
 	        inventory_image = "printer_blueprint.png",
 	        description = description.." blueprint\n".."Requires "..cost.." plastic sheet to be printed",--Fun fact: it took me a while to notice people can't guess the cost
             stack_max = 1,
             groups = {printer_blueprint=1},
         })
     end
+    --storage:set_string(item.."_blueprint cost", "basic_materials:plastic_sheet "..cost)
+    --storage:set_string(item.."_blueprint item", item)
     blueprint_items.price[item.."_blueprint"] = "basic_materials:plastic_sheet "..cost
     blueprint_items.result[item.."_blueprint"] = item
     minetest.register_craft( {
 	    type = "shapeless",
-	    output = item.."_blueprint",
+	    output = ":"..item.."_blueprint",
 	    recipe = {"3d_printer:blueprint", item},
     })
 end
 
 --Items
-minetest.register_craftitem("3d_printer:blueprint", {
+minetest.register_craftitem(":3d_printer:blueprint", {
 	inventory_image = "printer_blueprint.png",
 	description = "Blank blueprint",
     stack_max = 1,
     groups = {printer_blueprint=1},
 })
-minetest.register_tool("3d_printer:battery", {
+minetest.register_tool(":3d_printer:battery", {
 	inventory_image = "printer_battery.png",
 	description = "Battery",
     stack_max = 1,
@@ -116,7 +120,7 @@ minetest.register_craft( {
 })
 
 --The printer
-minetest.register_node("3d_printer:printer", {
+minetest.register_node(":3d_printer:printer", {
 	description = "3D Printer",
 	tiles = {"3d_printer_top.png","3d_printer_bottom.png","3d_printer_side.png","3d_printer_side.png","3d_printer_side.png","3d_printer_side.png"},
 	groups = {oddly_breakable_by_hand=1, snappy=1, cracky=1},
@@ -189,6 +193,26 @@ minetest.register_node("3d_printer:printer", {
             return
         end
         if not (inv:is_empty("main") or inv:is_empty("material") or inv:is_empty("battery")) then
+            --[[local plastic_cost = storage:get_string(blueprint_used.name.." cost")
+            local item_result = storage:get_string(blueprint_used.name.." item")
+            if not plastic_cost or not item_result then
+                minetest.chat_send_player(puncher:get_player_name(), "Blueprint data not found")
+                return
+            end]]
+            --[[if plastic_used.name.." "..plastic_count == plastic_cost then
+                 --minetest.chat_send_player(puncher:get_player_name(), "second check")
+                if battery.name == "3d_printer:battery" then
+                    --minetest.chat_send_player(puncher:get_player_name(), "third check")
+                    inv:set_stack("material", 1, "")
+                    inv:set_stack("result", 1, item_result)
+                    battery.wear = battery.wear + (65535/10)
+                    inv:set_stack("battery", 1, battery)
+                end
+            else
+                minetest.chat_send_player(puncher:get_player_name(), plastic_used.name.." "..plastic_count)
+                minetest.chat_send_player(puncher:get_player_name(), plastic_cost)--Needs fixing
+                minetest.chat_send_player(puncher:get_player_name(), "Lack of plastic/Excessive plastic")
+            end]]
             --minetest.chat_send_player(puncher:get_player_name(), "first check")
             --minetest.chat_send_player(puncher:get_player_name(), plastic_used.name)
             if plastic_used.name.." "..plastic_count == blueprint_items.price[blueprint_used.name] then
