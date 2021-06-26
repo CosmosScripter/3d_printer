@@ -4,7 +4,12 @@ price={},
 result={}
 }
 
---local storage = minetest.get_mod_storage()
+--Default false, if true uses mod storage
+local use_mod_storage = false
+
+if use_mod_storage == true then
+    plastic_printer_storage = minetest.get_mod_storage()
+end
 
 --Functions
 local function can_dig(pos, player)--Prevent a loss of items by accident
@@ -66,10 +71,13 @@ function plastic_printer_data:register_blueprint(item, description, cost, drawin
             groups = {printer_blueprint=1},
         })
     end
-    --storage:set_string(item.."_blueprint cost", "basic_materials:plastic_sheet "..cost)
-    --storage:set_string(item.."_blueprint item", item)
-    blueprint_items.price[item.."_blueprint"] = "basic_materials:plastic_sheet "..cost
-    blueprint_items.result[item.."_blueprint"] = item
+    if use_mod_storage == true then
+        plastic_printer_storage:set_string(item.."_blueprint cost", "basic_materials:plastic_sheet "..cost)
+        plastic_printer_storage:set_string(item.."_blueprint item", item)
+    else
+        blueprint_items.price[item.."_blueprint"] = "basic_materials:plastic_sheet "..cost
+        blueprint_items.result[item.."_blueprint"] = item
+    end
     minetest.register_craft( {
 	    type = "shapeless",
 	    output = ":"..item.."_blueprint",
@@ -193,39 +201,40 @@ minetest.register_node(":3d_printer:printer", {
             return
         end
         if not (inv:is_empty("main") or inv:is_empty("material") or inv:is_empty("battery")) then
-            --[[local plastic_cost = storage:get_string(blueprint_used.name.." cost")
-            local item_result = storage:get_string(blueprint_used.name.." item")
-            if not plastic_cost or not item_result then
-                minetest.chat_send_player(puncher:get_player_name(), "Blueprint data not found")
-                return
-            end]]
-            --[[if plastic_used.name.." "..plastic_count == plastic_cost then
-                 --minetest.chat_send_player(puncher:get_player_name(), "second check")
-                if battery.name == "3d_printer:battery" then
-                    --minetest.chat_send_player(puncher:get_player_name(), "third check")
-                    inv:set_stack("material", 1, "")
-                    inv:set_stack("result", 1, item_result)
-                    battery.wear = battery.wear + (65535/10)
-                    inv:set_stack("battery", 1, battery)
+            if use_mod_storage == true then
+                local plastic_cost = plastic_printer_storage:get_string(blueprint_used.name.." cost")
+                local item_result = plastic_printer_storage:get_string(blueprint_used.name.." item")
+                if not plastic_cost or not item_result then
+                    minetest.chat_send_player(puncher:get_player_name(), "Blueprint data not found")
+                    return
+                end
+                if plastic_used.name.." "..plastic_count == plastic_cost then
+                     --minetest.chat_send_player(puncher:get_player_name(), "second check")
+                    if battery.name == "3d_printer:battery" then
+                        --minetest.chat_send_player(puncher:get_player_name(), "third check")
+                        inv:set_stack("material", 1, "")
+                        inv:set_stack("result", 1, item_result)
+                        battery.wear = battery.wear + (65535/10)
+                        inv:set_stack("battery", 1, battery)
+                    end
+                else
+                    minetest.chat_send_player(puncher:get_player_name(), "Lack of plastic/Excessive plastic")
                 end
             else
-                minetest.chat_send_player(puncher:get_player_name(), plastic_used.name.." "..plastic_count)
-                minetest.chat_send_player(puncher:get_player_name(), plastic_cost)--Needs fixing
-                minetest.chat_send_player(puncher:get_player_name(), "Lack of plastic/Excessive plastic")
-            end]]
-            --minetest.chat_send_player(puncher:get_player_name(), "first check")
-            --minetest.chat_send_player(puncher:get_player_name(), plastic_used.name)
-            if plastic_used.name.." "..plastic_count == blueprint_items.price[blueprint_used.name] then
-                 --minetest.chat_send_player(puncher:get_player_name(), "second check")
-                if battery.name == "3d_printer:battery" then
-                    --minetest.chat_send_player(puncher:get_player_name(), "third check")
-                    inv:set_stack("material", 1, "")
-                    inv:set_stack("result", 1, blueprint_items.result[blueprint_used.name])
-                    battery.wear = battery.wear + (65535/10)
-                    inv:set_stack("battery", 1, battery)
+                --minetest.chat_send_player(puncher:get_player_name(), "first check")
+                --minetest.chat_send_player(puncher:get_player_name(), plastic_used.name)
+                if plastic_used.name.." "..plastic_count == blueprint_items.price[blueprint_used.name] then
+                     --minetest.chat_send_player(puncher:get_player_name(), "second check")
+                    if battery.name == "3d_printer:battery" then
+                        --minetest.chat_send_player(puncher:get_player_name(), "third check")
+                        inv:set_stack("material", 1, "")
+                        inv:set_stack("result", 1, blueprint_items.result[blueprint_used.name])
+                        battery.wear = battery.wear + (65535/10)
+                        inv:set_stack("battery", 1, battery)
+                    end
+                else
+                    minetest.chat_send_player(puncher:get_player_name(), "Lack of plastic/Excessive plastic")
                 end
-            else
-                minetest.chat_send_player(puncher:get_player_name(), "Lack of plastic/Excessive plastic")
             end
         end
     end,
