@@ -10,3 +10,5 @@ The result will be an item whose name will be "foomod:foobar_blueprint", descrip
 The parameter drawing_image is optional, it overlays the blueprint image. If nil, the item inventory image will be a blank blueprint.
 
 Every parameter filled in the function needs to be a string, except for drawing_image, which can be nil.
+
+NOTE: Don't forget to make your mod depend on this one, otherwise the printer will not work properly and will cause crashes.
